@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matematički Zadatci</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff; /* Svetlo plava pozadina */
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        h1 {
+            color: #4caf50; /* Pastelna zelena */
+        }
+
+        .task {
+            background-color: #e1f5fe; /* Svetlo plava */
+            border: 2px solid #4caf50;
+            border-radius: 10px;
+            padding: 20px;
+            font-size: 24px;
+            margin: 20px 0;
+        }
+
+        textarea {
+            width: 80%;
+            height: 100px;
+            border: 1px solid #4caf50;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            padding: 10px;
+        }
+
+        .input-area {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        input[type="number"] {
+            padding: 10px;
+            border: 1px solid #4caf50;
+            border-radius: 5px;
+            margin-right: 10px;
+            width: 30%;
+        }
+
+        button {
+            background-color: #4caf50; /* Pastelna zelena */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #388e3c; /* Tamnija nijansa zelene */
+        }
+
+        .feedback {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+
+        .navigation {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+      <h1>Добродошли!</br> Вежбај Сабирање и Одузимање</h1>
+        <p>Задаци су насумично генерисани. Упиши разраду задатка и коначно решење. Срећно!</p>
+        <div class="task" id="task"></div>
+        <textarea id="solution" placeholder="Радите разраду овде..."></textarea>
+        <div class="input-area">
+            <input type="number" id="result" placeholder="Унесите крајњи резултат...">
+            <button id="checkButton">Потврди резултат</button>
+        </div>
+        <div id="feedback" class="feedback"></div>
+        <div class="navigation">
+            <button id="prevTask">Претходни задатак</button>
+            <button id="nextTask">Следећи задатак</button>
+        </div>
+    </div>
+
+    <script>
+        const tasks = [
+            { text: 'Marko ima nepoznat broj jabuka. Ako mu dodamo 12 jabuka, ukupno će imati 30. Koliko jabuka Marko ima?', solution: 18 },
+          { text: 'Petar je imao 40 bonbona. Dao je nepoznat broj prijateljima i ostalo mu je 28. Koliko bonbona je dao?', equation: '40 - X = 28', solution: 12 },
+      
+          { text: 'U čaši je nepoznata količina soka. Ako dodamo 20 ml, čaša će imati ukupno 50 ml. Koliko soka ima u čaši?', solution: 30 },
+            { text: 'Ana je kupila nepoznat broj sladoleda. Ako joj tata kupi još 5, imaće ukupno 20 sladoleda. Koliko sladoleda je Ana kupila?', solution: 15 },
+            { equation: 'X + 5 = 12', solution: 7 },
+            { equation: '31 + X = 89', solution: 58 },
+            { equation: 'X - 60 = 11', solution: 71 },
+          { equation: '83 - X = 33', solution: 50 },
+            { equation: 'X + 60 = 100', solution: 40 },
+           { text: 'U kutiji ima nepoznat broj olovaka. Ako dodamo 8 olovaka, ukupno će ih biti 25. Koliko olovaka je prvobitno bilo u kutiji?', equation: 'X + 8 = 25', solution: 17 },
+        { text: 'Na stolu je bilo 30 jabuka. Neko je uzeo nepoznat broj jabuka, pa je ostalo 18. Koliko jabuka je uzeto?', equation: '30 - X = 18', solution: 12 },
+    { text: 'U autobusu je bilo 50 putnika. Nakon što je nepoznat broj njih izašao, ostalo je 35 putnika. Koliko putnika je izašlo?', equation: '50 - X = 35', solution: 15 },
+    { text: 'Petar je prešao nepoznat broj kilometara. Ako pređe još 10 km, ukupno će preći 50 km. Koliko je Petar do sada prešao?', equation: 'X + 10 = 50', solution: 40 },
+            { equation: '72 - X = 36', solution: 36 },
+            { equation: 'X + 20 = 72', solution: 52 },
+            { equation: '100 - X = 4', solution: 96 },
+            { equation: 'X + 9 = 20', solution: 11 },
+          { text: 'U razredu je nepoznat broj učenika. Ako se pridruži još 12 učenika, ukupno će biti 36 učenika. Koliko učenika je bilo na početku?', equation: 'X + 12 = 36', solution: 24 },
+        { text: 'Marija ima nepoznat broj kovanica. Ako joj da 5 kovanica, imaće ukupno 20 kovanica. Koliko kovanica Marija ima?', equation: 'X + 5 = 20', solution: 15 },
+        { text: 'Na stolu je nepoznat broj knjiga. Ako dodamo još 7 knjiga, ukupno će ih biti 28. Koliko knjiga je prvobitno bilo na stolu?', equation: 'X + 7 = 28', solution: 21 },
+        { text: 'Petar je imao 40 bonbona. Dao je nepoznat broj prijateljima i ostalo mu je 28. Koliko bonbona je dao?', equation: '40 - X = 28', solution: 12 },
+   
+          { text: 'U voćnjaku ima nepoznat broj trešanja. Ako uberemo još 20 trešanja, imaćemo ukupno 60 trešanja. Koliko trešanja je bilo u voćnjaku?', equation: 'X + 20 = 60', solution: 40 },
+            { equation: '28 + X = 90', solution: 62 },
+            { equation: 'X - 18 = 2', solution: 20 },
+            { equation: 'X + 80 = 90', solution: 10 },
+            { equation: '50 - X = 20', solution: 30 },
+          { text: 'U razredu je nepoznat broj učenika. Ako se pridruži još 12 učenika, ukupno će biti 36 učenika. Koliko učenika je bilo na početku?', equation: 'X + 12 = 36', solution: 24 },
+    { text: 'Marija ima nepoznat broj kovanica. Ako joj da 5 kovanica, imaće ukupno 20 kovanica. Koliko kovanica Marija ima?', equation: 'X + 5 = 20', solution: 15 },
+    { text: 'Na stolu je nepoznat broj knjiga. Ako dodamo još 7 knjiga, ukupno će ih biti 28. Koliko knjiga je prvobitno bilo na stolu?', equation: 'X + 7 = 28', solution: 21 },
+          { text: 'Marko je imao 60 olovaka. Nakon što je nepoznat broj olovaka poklonio, ostalo mu je 45. Koliko olovaka je poklonio?', equation: '60 - X = 45', solution: 15 },
+      
+          { equation: 'X + 16 = 80', solution: 64 },
+            { equation: '10 + X = 50', solution: 40 },
+            { equation: 'X - 10 = 5', solution: 15 },
+            { equation: 'X + 50 = 70', solution: 20 },
+          { text: 'U voćnjaku ima nepoznat broj trešanja. Ako uberemo još 20 trešanja, imaćemo ukupno 60 trešanja. Koliko trešanja je bilo u voćnjaku?', equation: 'X + 20 = 60', solution: 40 },
+    { text: 'Marko je imao nepoznat broj olovaka. Ako mu damo još 8, imaće ukupno 25. Koliko olovaka je imao Marko?', equation: 'X + 8 = 25', solution: 17 },
+    { text: 'Na trgu je bilo 80 golubova. Nakon što je nepoznat broj odleteo, ostalo je 60 golubova. Koliko golubova je odletelo?', equation: '80 - X = 60', solution: 20 },
+    { text: 'U kutiji je bilo 100 čokolada. Posle što je nepoznat broj pojeden, ostalo je 78. Koliko čokolada je pojedeno?', equation: '100 - X = 78', solution: 22 },
+   
+            { equation: '11 + X = 33', solution: 22 },
+            { equation: 'X - 12 = 0', solution: 12 },
+            { equation: 'X + 2 = 6', solution: 4 },
+            { equation: '6 + X = 34', solution: 28 },
+            { equation: '20 - X = 15', solution: 5 },
+            { equation: 'X + 13 = 100', solution: 87 },
+          { text: 'Ivana ima nepoznat broj bombona. Ako joj damo još 6 bombona, imaće ukupno 30. Koliko bombona Ivana ima?', equation: 'X + 6 = 30', solution: 24 },
+    { text: 'U akvarijumu je nepoznat broj riba. Ako ubacimo još 13 riba, imaćemo ukupno 40 riba. Koliko riba je bilo u akvarijumu?', equation: 'X + 13 = 40', solution: 27 },
+    { text: 'Ivana je imala 45 crteža. Neki su izgubljeni, pa je ostalo 33 crteža. Koliko crteža je izgubljeno?', equation: '45 - X = 33', solution: 12 },
+    { text: 'Na polici je bilo 50 knjiga. Nakon što je nepoznat broj sklonjen, ostalo je 38. Koliko knjiga je sklonjeno?', equation: '50 - X = 38', solution: 12 },
+    
+            { equation: '33 - X = 3', solution: 30 },
+            { equation: '90 - X = 0', solution: 90 },
+            { equation: 'X + 44 = 76', solution: 32 },
+            { equation: '12 + X = 38', solution: 26 },
+            { equation: 'X - 22 = 2', solution: 24 },
+          { text: 'U kuhinji je nepoznat broj tanjira. Ako dodamo još 8 tanjira, ukupno će ih biti 25. Koliko tanjira je bilo na početku?', equation: 'X + 8 = 25', solution: 17 },
+    { text: 'U autobusu je nepoznat broj putnika. Ako se pridruži još 15 putnika, biće ukupno 60. Koliko putnika je bilo u autobusu na početku?', equation: 'X + 15 = 60', solution: 45 },
+    { text: 'Ana je imala 90 klikera. Nakon što je dala nepoznat broj prijateljima, ostalo joj je 72. Koliko klikera je dala?', equation: '90 - X = 72', solution: 18 },
+    { text: 'Na stadionu je bilo 120 gledalaca. Nakon što je nepoznat broj njih otišao, ostalo je 85. Koliko gledalaca je otišlo?', equation: '120 - X = 85', solution: 35 },
+    
+            { equation: '49 - X = 9', solution: 40 },
+            { equation: 'X + 25 = 99', solution: 74 },
+            { equation: '8 + X = 72', solution: 64 },
+          { text: 'U školi je bilo 200 učenika. Nakon što je nepoznat broj otišao kući, ostalo je 160. Koliko učenika je otišlo?', equation: '200 - X = 160', solution: 40 },
+    { text: 'Na drvetu je bilo 50 jabuka. Neki su ubrani, pa je ostalo 35. Koliko jabuka je ubrano?', equation: '50 - X = 35', solution: 15 },
+    
+            { equation: '34 - X = 0', solution: 34 },
+            { equation: 'X + 36 = 100', solution: 64 },
+            { equation: '12 + X = 27', solution: 15 },
+            { equation: 'X - 8 = 10', solution: 18 },
+          { text: 'Na polici je nepoznat broj knjiga. Ako dodamo još 10, ukupno će ih biti 40. Koliko knjiga je bilo na polici na početku?', equation: 'X + 10 = 40', solution: 30 },
+    { text: 'Na nebu je nepoznat broj zvezda. Ako se pojavi još 5 zvezda, ukupno će ih biti 30. Koliko zvezda je bilo na nebu pre toga?', equation: 'X + 5 = 30', solution: 25 },
+    
+            { equation: 'X + 15 = 30', solution: 15 },
+            { equation: 'X - 10 = 3', solution: 13 },
+            { equation: '30 - X = 2', solution: 28 },
+            { equation: 'X + 29 = 100', solution: 71 },
+          { text: 'Na drvetu je bilo 50 jabuka. Neki su ubrani, pa je ostalo 35. Koliko jabuka je ubrano?', equation: '50 - X = 35', solution: 15 },
+    { text: 'U posudi je bilo 40 bombona. Nakon što su pojedene nepoznat broj, ostalo je 26. Koliko bombona je pojedeno?', equation: '40 - X = 26', solution: 14 },
+    
+            { equation: '60 - X = 0', solution: 60 },
+            { equation: 'X + 20 = 50', solution: 30 },
+            { equation: '40 - X = 10', solution: 30 },
+            { equation: 'X + 50 = 68', solution: 18 },
+          { text: 'U parku je nepoznat broj ljuljaški. Ako dodamo još 4, ukupno će biti 25 ljuljaški. Koliko ljuljaški je bilo u parku na početku?', equation: 'X + 4 = 25', solution: 21 },
+    { text: 'Na početku je bilo nepoznat broj automobila. Ako dodamo još 9 automobila, biće ukupno 60. Koliko automobila je bilo na početku?', equation: 'X + 9 = 60', solution: 51 },
+    
+            { equation: '9 + X = 19', solution: 10 },
+            { equation: '100 - X = 25', solution: 75 },
+            { equation: 'X + 10 = 40', solution: 30 },
+            { equation: '18 + X = 20', solution: 2 },
+            { equation: 'X - 15 = 3', solution: 18 },
+           { text: 'U akvarijumu je bilo 30 riba. Nakon što je nepoznat broj riba izvađen, ostalo ih je 20. Koliko riba je izvađeno?', equation: '30 - X = 20', solution: 10 },
+    { text: 'U fioci je bilo 75 novčića. Nakon što je nepoznat broj potrošen, ostalo je 60. Koliko novčića je potrošeno?', equation: '75 - X = 60', solution: 15 },
+    
+            { equation: '2 + X = 8', solution: 6 },
+            { equation: 'X + 17 = 70', solution: 53 },
+            { equation: 'X - 3 = 15', solution: 18 },
+            { equation: '54 - X = 12', solution: 42 },
+            { equation: '25 + X = 100', solution: 75 },
+           { text: 'U čaši je nepoznat broj kapljica vode. Ako dodamo još 30 kapljica, imaćemo ukupno 70 kapljica. Koliko je bilo kapljica na početku?', equation: 'X + 30 = 70', solution: 40 },
+    { text: 'U galeriji je nepoznat broj slika. Ako dodamo još 5 slika, ukupno će ih biti 25. Koliko slika je bilo na početku?', equation: 'X + 5 = 25', solution: 20 },
+    
+            { equation: 'X - 10 = 20', solution: 30 },
+            { equation: 'X + 80 = 100', solution: 20 },
+            { equation: '70 - X = 10', solution: 60 },
+            { equation: 'X + 8 = 40', solution: 32 },
+            { equation: 'X - 5 = 5', solution: 10 },
+          { text: 'U učionici je bilo 25 stolica. Neki su sklonjeni, pa je ostalo 18 stolica. Koliko stolica je sklonjeno?', equation: '25 - X = 18', solution: 7 },
+    { text: 'U parku je bilo 90 dece. Nakon što je nepoznat broj otišao kući, ostalo je 72. Koliko dece je otišlo?', equation: '90 - X = 72', solution: 18 },
+    
+            { equation: '7 + X = 15', solution: 8 },
+            { equation: 'X - 5 = 3', solution: 8 },
+            { equation: '6 + X = 40', solution: 34 },
+           { text: 'U korpi je nepoznat broj naranči. Ako dodamo još 12, ukupno će biti 50 naranči. Koliko naranči je bilo na početku?', equation: 'X + 12 = 50', solution: 38 },
+            { equation: '99 - X = 1', solution: 98 },
+            { equation: '12 - X = 4', solution: 8 },
+          { text: 'U igrački je bilo 150 lego kockica. Nakon što je nepoznat broj izgubljen, ostalo je 140. Koliko kockica je izgubljeno?', equation: '150 - X = 140', solution: 10 },
+    { text: 'U korpi je bilo 70 krušaka. Nakon što je nepoznat broj pojeden, ostalo ih je 52. Koliko krušaka je pojedeno?', equation: '70 - X = 52', solution: 18 },
+
+            { equation: 'X + 19 = 30', solution: 11 },
+            { equation: 'X - 20 = 0', solution: 20 },
+            { equation: '28 + X = 100', solution: 72 },
+            { equation: '90 - X = 10', solution: 80 },
+            { equation: '8 + X = 38', solution: 30 },
+            { equation: 'X + 30 = 98', solution: 68 },
+            { equation: 'X - 22 = 7', solution: 29 },
+            { equation: '24 - X = 0', solution: 24 },
+            { equation: '100 - X = 40', solution: 60 },
+            { equation: 'X + 6 = 27', solution: 21 },
+            { equation: '20 + X = 36', solution: 16 },
+            { equation: 'X + 1 = 7', solution: 6 },
+            { equation: 'X + 4 = 40', solution: 36 },
+            { equation: '44 - X = 4', solution: 40 },
+            { equation: '5 + X = 9', solution: 4 },
+            { equation: 'X + 24 = 49', solution: 25 },
+            { equation: 'X - 15 = 0', solution: 15 },
+            { equation: '8 + X = 25', solution: 17 },
+            { equation: 'X - 3 = 1', solution: 4 },
+            { equation: 'X + 12 = 84', solution: 72 },
+            { equation: 'X - 12 = 2', solution: 14 },
+            { equation: '16 - X = 8', solution: 8 },
+            { equation: '70 - X = 20', solution: 50 },
+            { equation: 'X + 31 = 60', solution: 29 },
+            { equation: 'X - 10 = 6', solution: 16 },
+            { equation: '40 + X = 100', solution: 60 },
+            { equation: '3 + X = 45', solution: 42 },
+            { equation: '28 - X = 10', solution: 18 },
+            { equation: 'X + 5 = 100', solution: 95 },
+            { equation: '8 + X = 70', solution: 62 },
+            { equation: 'X + 5 = 50', solution: 45 },
+            { equation: '15 + X = 100', solution: 85 },
+            { equation: '2 + X = 20', solution: 18 },
+            { equation: '40 - X = 30', solution: 10 },
+            { equation: 'X - 12 = 36', solution: 48 },
+            { equation: 'X + 45 = 88', solution: 43 },
+            { equation: '7 + X = 54', solution: 47 },
+            { equation: '8 + X = 20', solution: 12 },
+            { equation: 'X + 6 = 14', solution: 8 },
+            { equation: '32 + X = 72', solution: 40 },
+            { equation: 'X + 33 = 100', solution: 67 },
+            { equation: 'X + 50 = 99', solution: 49 },
+            { equation: '8 + X = 60', solution: 52 },
+            { equation: '10 + X = 11', solution: 1 },
+            { equation: 'X + 12 = 60', solution: 48 },
+            { equation: 'X - 10 = 15', solution: 25 },
+            { equation: 'X + 4 = 49', solution: 45 },
+            { equation: 'X - 50 = 0', solution: 50 },
+            { equation: '60 - X = 36', solution: 24 },
+            { equation: 'X + 2 = 25', solution: 23 },
+            { equation: '16 + X = 64', solution: 48 },
+            { equation: 'X - 10 = 10', solution: 20 },
+            { equation: 'X + 3 = 19', solution: 16 },
+            { equation: '60 - X = 14', solution: 46 },
+            { equation: '20 + X = 50', solution: 30 },
+            { equation: '9 + X = 30', solution: 21 },
+            { equation: 'X + 38 = 70', solution: 32 },
+            { equation: '25 + X = 40', solution: 15 },
+            { equation: 'X + 12 = 36', solution: 24 },
+            { equation: '40 - X = 10', solution: 30 },
+            { equation: 'X + 5 = 29', solution: 24 },
+            { equation: '3 + X = 24', solution: 21 },
+            { equation: '70 - X = 14', solution: 56 },
+            { equation: 'X + 20 = 66', solution: 46 },
+            { equation: 'X + 45 = 55', solution: 10 },
+            { equation: 'X - 5 = 5', solution: 10 },
+            { equation: '33 - X = 4', solution: 29 },
+            { equation: 'X + 60 = 98', solution: 38 },
+            { equation: 'X - 10 = 4', solution: 14 },
+            { equation: 'X + 20 = 36', solution: 16 },
+            { equation: 'X + 12 = 16', solution: 4 },
+            { equation: 'X + 15 = 80', solution: 65 },
+            { equation: '5 + X = 10', solution: 5 },
+            { equation: 'X + 12 = 70', solution: 58 },
+            { equation: '50 - X = 40', solution: 10 },
+            { equation: '40 + X = 75', solution: 35 },
+            { equation: '45 + X = 99', solution: 54 },
+            { equation: 'X + 2 = 10', solution: 8 },
+            { equation: 'X - 20 = 1', solution: 21 },
+            { equation: 'X - 18 = 0', solution: 18 },
+            { equation: 'X + 6 = 50', solution: 44 },
+            { equation: 'X + 40 = 72', solution: 32 },
+            { equation: 'X + 20 = 100', solution: 80 },
+            { equation: 'X - 10 = 0', solution: 10 },
+            { equation: '2 + X = 3', solution: 1 },
+            { equation: '30 - X = 20', solution: 10 },
+            { equation: 'X + 33 = 50', solution: 17 },
+            { equation: 'X + 30 = 80', solution: 50 },
+            { equation: 'X + 12 = 32', solution: 20 },
+            { equation: 'X + 10 = 40', solution: 30 },
+            { equation: '50 - X = 10', solution: 40 },
+            { equation: '5 + X = 15', solution: 10 },
+            { equation: 'X + 1 = 20', solution: 19 },
+            { equation: '5 + X = 35', solution: 30 },
+            { equation: '2 + X = 10', solution: 8 },
+            { equation: 'X + 11 = 40', solution: 29 },
+            { equation: 'X - 9 = 4', solution: 13 },
+            { equation: '30 - X = 15', solution: 15 },
+            { equation: 'X + 30 = 90', solution: 60 },
+            { equation: '40 - X = 15', solution: 25 },
+            { equation: 'X - 40 = 10', solution: 50 },
+            { equation: '5 + X = 100', solution: 95 },
+            { equation: '80 - X = 5', solution: 75 },
+            { equation: 'X + 2 = 12', solution: 10 },
+            { equation: '80 - X = 60', solution: 20 },
+            { equation: 'X + 20 = 99', solution: 79 },
+            { equation: 'X + 24 = 75', solution: 51 },
+            { equation: 'X + 10 = 30', solution: 20 },
+            { equation: '100 - X = 90', solution: 10 },
+            { equation: 'X + 30 = 60', solution: 30 },
+            { equation: '40 + X = 45', solution: 5 },
+            { equation: 'X + 24 = 60', solution: 36 },
+            { equation: 'X + 10 = 60', solution: 50 },
+            { equation: '7 + X = 10', solution: 3 },
+            { equation: 'X - 6 = 2', solution: 8 },
+            { equation: '7 + X = 14', solution: 7 },
+            { equation: '3 + X = 12', solution: 9 },
+            { equation: 'X + 40 = 50', solution: 10 },
+            { equation: '80 - X = 30', solution: 50 },
+            { equation: '60 - X = 12', solution: 48 },
+            { equation: '20 + X = 30', solution: 10 },
+            { equation: 'X - 40 = 10', solution: 50 },
+            { equation: '80 - X = 20', solution: 60 },
+            { equation: 'X + 45 = 100', solution: 55 },
+            { equation: 'X + 45 = 85', solution: 40 },
+            { equation: 'X + 3 = 21', solution: 18 },
+            { equation: 'X + 15 = 30', solution: 15 },
+            { equation: '5 + X = 70', solution: 65 },
+            { equation: 'X - 5 = 15', solution: 20 },
+            { equation: '40 - X = 5', solution: 35 },
+            { equation: '30 + X = 50', solution: 20 },
+            { equation: 'X - 20 = 0', solution: 20 },
+            { equation: '7 + X = 29', solution: 22 },
+            { equation: '3 + X = 17', solution: 14 },
+            { equation: 'X + 50 = 100', solution: 50 },
+            { equation: 'X + 20 = 80', solution: 60 },
+            { equation: 'X + 60 = 80', solution: 20 },
+            { equation: '50 - X = 10', solution: 40 },
+            { equation: 'X + 4 = 60', solution: 56 },
+            { equation: '100 - X = 10', solution: 90 },
+            { equation: '10 + X = 60', solution: 50 },
+            { equation: 'X + 9 = 80', solution: 71 },
+            { equation: '70 - X = 20', solution: 50 },
+            { equation: 'X + 5 = 20', solution: 15 },
+            { equation: '30 - X = 25', solution: 5 },
+            { equation: 'X - 7 = 4', solution: 11 },
+            { equation: 'X - 5 = 3', solution: 8 },
+            { equation: 'X + 40 = 80', solution: 40 },
+        ];
+
+        // Funkcija za nasumično mešanje (shuffle) zadataka
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // Promešaj zadatke pre prikazivanja
+        shuffle(tasks);
+
+        let currentTaskIndex = 0;
+
+        function displayTask() {
+            const taskElement = document.getElementById('task');
+            taskElement.textContent = tasks[currentTaskIndex].text || tasks[currentTaskIndex].equation;
+            document.getElementById('result').value = '';
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('solution').value = '';
+        }
+
+        document.getElementById('checkButton').addEventListener('click', checkResult);
+        document.getElementById('result').addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                checkResult();
+            }
+        });
+
+        function checkResult() {
+            const result = parseInt(document.getElementById('result').value);
+            const correctAnswer = tasks[currentTaskIndex].solution;
+            const feedbackElement = document.getElementById('feedback');
+
+            if (result === correctAnswer) {
+                feedbackElement.textContent = 'ТАЧНО! 🎉😄';
+            } else {
+                feedbackElement.textContent = 'Нетачно! 😟';
+            }
+        }
+
+        document.getElementById('nextTask').addEventListener('click', () => {
+            currentTaskIndex = (currentTaskIndex + 1) % tasks.length;
+            displayTask();
+        });
+
+        document.getElementById('prevTask').addEventListener('click', () => {
+            currentTaskIndex = (currentTaskIndex - 1 + tasks.length) % tasks.length;
+            displayTask();
+        });
+
+        // Prikaži prvi zadatak nakon shuffle
+        displayTask();
+    </script>
+</body>
+</html>
